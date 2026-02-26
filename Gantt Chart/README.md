@@ -89,3 +89,34 @@ The following options can be easily configured within the specification.
 
 
 
+
+## Member Leave adaptation (no phase hierarchy)
+
+A member-focused variant of the chart is provided in `Gantt Member Leave Spec.json`.
+
+### Suggested field mapping from your model
+
+Use these source columns in Deneb values (no hierarchy on dates):
+
+| Required by spec | Suggested model field |
+| --- | --- |
+| `START_DATE` (or `start`) | `MEMBER_LEAVE_MONITOR[START_DATE]` |
+| `END_DATE` (or `end`) | `MEMBER_LEAVE_MONITOR[END_DATE]` |
+| `MEM_UID` | `MEMBER_LEAVE_MONITOR[MEM_UID]` or `MCS_MEMBER[MEM_UID]` |
+| `Display Name` (or `task`) | `MCS_MEMBER[Display Name]` |
+| `phase` (optional) | Optional manual grouping field; leave blank to avoid phase grouping |
+| `LEAVE_PASS_NB` (optional) | `MEMBER_LEAVE_MONITOR[LEAVE_PASS_NB]` |
+| `Status` (or `status`) | `REF_STATUS_ID[Status]` |
+| `DETAILS` / `NOTE` (optional) | `MEMBER_LEAVE_MONITOR[DETAILS]` / `MEMBER_LEAVE_MONITOR[NOTE]` |
+
+### What this variant changes
+
+- Renders **one row per member** (grouped by `MEM_UID` when available) and places multiple leave bars for that member on the same line.
+- Drops hierarchy-derived `phase` grouping so rows are controlled directly by your external member slicers.
+- `phase` is now optional; if omitted, no hierarchy path is built.
+- Includes guards for invalid/missing dates to prevent Deneb SVG path errors when source rows are incomplete.
+- Defaults leave bars to **100% completion** (for leave periods this behaves like a full block).
+- Maps status colors to leave-friendly values: `Approved`, `Pending`, `Rejected`, `Cancelled`.
+- Removes the extra detail columns (`Leave From`, `Leave To`, `Days`, `Leave Status`, `Duration %`) so only the member label column remains.
+
+If your status values differ, edit the `statusColumn` signal in the spec.
