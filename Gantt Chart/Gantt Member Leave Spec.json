@@ -584,6 +584,11 @@
         },
         {
           "type": "formula",
+          "as": "rowId",
+          "expr": "isValid(datum.MEM_UID)?toString(datum.MEM_UID):datum.task"
+        },
+        {
+          "type": "formula",
           "as": "start",
           "expr": "isValid(datum.start)?datum.start:datum.START_DATE"
         },
@@ -683,7 +688,7 @@
         {
           "type": "formula",
           "as": "phasePath",
-          "expr": "isValid(scale('x', datum.start)) && isValid(scale('x', datum.end)) && isValid(scale('y', datum.id)) ? 'M ' + scale('x', datum.start)+' '  +   (scale('y', datum.id)+yPaddingInner) + ' H ' +  scale('x', datum.end)+' '   + ' v ' +  phaseSymbolHeight + ' L ' +  (scale('x', datum.end) - phaseSymbolWidth) +' '  +   (scale('y', datum.id)+yPaddingInner+phaseSymbolHeight/2 ) + ' L ' +  (scale('x', datum.start)+phaseSymbolWidth) + ' '  +   (scale('y', datum.id)+yPaddingInner+phaseSymbolHeight/2) + ' L ' +  (scale('x', datum.start)) + ' '  +   (scale('y', datum.id)+ yPaddingInner+phaseSymbolHeight) + ' z' : ''"
+          "expr": "isValid(scale('x', datum.start)) && isValid(scale('x', datum.end)) && isValid(scale('y', datum.rowId)) ? 'M ' + scale('x', datum.start)+' '  +   (scale('y', datum.rowId)+yPaddingInner) + ' H ' +  scale('x', datum.end)+' '   + ' v ' +  phaseSymbolHeight + ' L ' +  (scale('x', datum.end) - phaseSymbolWidth) +' '  +   (scale('y', datum.rowId)+yPaddingInner+phaseSymbolHeight/2 ) + ' L ' +  (scale('x', datum.start)+phaseSymbolWidth) + ' '  +   (scale('y', datum.rowId)+yPaddingInner+phaseSymbolHeight/2) + ' L ' +  (scale('x', datum.start)) + ' '  +   (scale('y', datum.rowId)+ yPaddingInner+phaseSymbolHeight) + ' z' : ''"
         },
         {
           "type": "filter",
@@ -847,9 +852,9 @@
           "type": "lookup",
           "from": "input",
           "key": "id",
-          "values": ["id", "end", "phase", "milestone"],
+          "values": ["id", "end", "phase", "milestone", "rowId"],
           "fields": ["dependencies"],
-          "as": ["sourceId", "sourceEnd", "sourcePhase", "sourceMilestone"]
+          "as": ["sourceId", "sourceEnd", "sourcePhase", "sourceMilestone", "sourceRowId"]
         },
         {
           "type": "lookup",
@@ -882,27 +887,27 @@
         {
           "type": "formula",
           "as": "a",
-          "expr": "[datum.milestone == null || datum.milestone == false?scale('x',datum.start):scale('x',datum.start) +(dayBandwidth/2) - (sqrt(milestoneSymbolSize)/2)  ,scale('y', datum.id)+bandwidth('y')/2 ]"
+          "expr": "[datum.milestone == null || datum.milestone == false?scale('x',datum.start):scale('x',datum.start) +(dayBandwidth/2) - (sqrt(milestoneSymbolSize)/2)  ,scale('y', datum.rowId)+bandwidth('y')/2 ]"
         },
         {
           "type": "formula",
           "as": "b",
-          "expr": "[datum.plottedStart >= datum.plottedSourceEnd?datum.plottedSourceEnd :datum.plottedStart ,scale('y', datum.id)+bandwidth('y')/2]"
+          "expr": "[datum.plottedStart >= datum.plottedSourceEnd?datum.plottedSourceEnd :datum.plottedStart ,scale('y', datum.rowId)+bandwidth('y')/2]"
         },
         {
           "type": "formula",
           "as": "c",
-          "expr": "[datum.plottedSourceEnd,scale('y',datum.sourceId)+bandwidth('y')/2]"
+          "expr": "[datum.plottedSourceEnd,scale('y',datum.sourceRowId)+bandwidth('y')/2]"
         },
         {
           "type": "formula",
           "as": "d",
-          "expr": "[datum.plottedStart > datum.plottedSourceEnd?null:datum.plottedStart ,datum.plottedStart > datum.plottedSourceEnd?null:scale('y',datum.sourceId)+(bandwidth('y'))]"
+          "expr": "[datum.plottedStart > datum.plottedSourceEnd?null:datum.plottedStart ,datum.plottedStart > datum.plottedSourceEnd?null:scale('y',datum.sourceRowId)+(bandwidth('y'))]"
         },
         {
           "type": "formula",
           "as": "e",
-          "expr": "[datum.plottedStart > datum.plottedSourceEnd?null:datum.plottedSourceEnd,datum.plottedStart > datum.plottedSourceEnd?null:scale('y',datum.sourceId)+(bandwidth('y'))]"
+          "expr": "[datum.plottedStart > datum.plottedSourceEnd?null:datum.plottedSourceEnd,datum.plottedStart > datum.plottedSourceEnd?null:scale('y',datum.sourceRowId)+(bandwidth('y'))]"
         },
         {"type": "fold", "fields": ["a", "b", "d", "e", "c"]},
         {"type": "filter", "expr": "datum.value[0] != null"},
@@ -1129,7 +1134,7 @@
         "update": {
           "x": {"value": 0},
           "x2": {"signal": "columnsWidth"},
-          "y": {"signal": "scale('y', datum.id)"},
+          "y": {"signal": "scale('y', datum.rowId)"},
           "height": {"signal": "bandwidth('y')"},
           "fill": {"value": "#dceaf7"},
           "opacity": {"value": 0.3}
@@ -1167,7 +1172,7 @@
         "update": {
           "x": {"value": -15},
           "x2": {"signal": "taskColumnWidth"},
-          "y": {"signal": "scale('y', datum.datum.id)"},
+          "y": {"signal": "scale('y', datum.datum.rowId)"},
           "height": {"signal": "bandwidth('y')"},
           "fill": {"value": "transparent"},
           "tooltip": {
@@ -1221,7 +1226,7 @@
                 "update": {
                   "align": {"value": "left"},
                   "dx": {"value": 16},
-                  "y": {"signal": "scale('y', datum.id)+bandwidth('y')/2"},
+                  "y": {"signal": "scale('y', datum.rowId)+bandwidth('y')/2"},
                   "text": {
                     "signal": "datum.phase == datum.task?upper(datum.task):datum.task"
                   },
@@ -1249,7 +1254,7 @@
                   },
                   "x": {"signal": "sqrt(90)/2"},
                   "size": {"value": 90},
-                  "yc": {"signal": "(scale('y', datum.id)+bandwidth('y')/2)-1"},
+                  "yc": {"signal": "(scale('y', datum.rowId)+bandwidth('y')/2)-1"},
                   "shape": {
                     "signal": "datum.phase == datum.task && !indata('collapsedPhases', 'phase', datum.phase)?'triangle-down':datum.phase == datum.task && indata('collapsedPhases', 'phase', datum.phase)?'triangle-right':''"
                   }
@@ -1286,7 +1291,7 @@
                 "update": {
                   "align": {"value": "center"},
                   "x": {"signal": "(startColumnWidth-columnPadding)/2"},
-                  "y": {"signal": "scale('y', datum.id)+bandwidth('y')/2"},
+                  "y": {"signal": "scale('y', datum.rowId)+bandwidth('y')/2"},
                   "text": {"signal": "timeFormat(datum.start,' %d/%m/%y')"},
                   "font": {
                     "signal": "datum.phase == datum.task?'Arial':'Segoe UI'"
@@ -1330,7 +1335,7 @@
                 "update": {
                   "align": {"value": "center"},
                   "x": {"signal": "(startColumnWidth-columnPadding)/2"},
-                  "y": {"signal": "scale('y', datum.id)+bandwidth('y')/2"},
+                  "y": {"signal": "scale('y', datum.rowId)+bandwidth('y')/2"},
                   "text": {"signal": "timeFormat(datum.labelEnd,' %d/%m/%y')"},
                   "font": {
                     "signal": "datum.phase == datum.task?'Arial':'Segoe UI'"
@@ -1374,7 +1379,7 @@
                 "update": {
                   "align": {"value": "right"},
                   "x": {"signal": "daysColumnWidth-columnPadding"},
-                  "y": {"signal": "scale('y', datum.id)+bandwidth('y')/2"},
+                  "y": {"signal": "scale('y', datum.rowId)+bandwidth('y')/2"},
                   "text": {"signal": "format(datum.days,',')+' d'"},
                   "fontWeight": {
                     "signal": "datum.phase == datum.task?'bold':'normal'"
@@ -1419,7 +1424,7 @@
                   "fill": {
                     "signal": "datum.id == itemHovered.id && isValid(datum.status) && datum.status!='' ?merge(hsl(scale('statusBackground',datum.status)), {l:0.72}):scale('statusBackground',datum.status)"
                   },
-                  "yc": {"signal": "(scale('y',datum.id)+bandwidth('y')/2)"}
+                  "yc": {"signal": "(scale('y',datum.rowId)+bandwidth('y')/2)"}
                 }
               }
             },
@@ -1435,7 +1440,7 @@
                   "fill": {
                     "signal": "datum.id == itemHovered.id && isValid(datum.status) && datum.status!='' ?merge(hsl(scale('statusFont',datum.status)), {l:0.20}):scale('statusFont',datum.status)"
                   },
-                  "y": {"signal": "(scale('y',datum.id)+bandwidth('y')/2)+1"},
+                  "y": {"signal": "(scale('y',datum.rowId)+bandwidth('y')/2)+1"},
                   "text": {"signal": "scale('statusText',datum.status)"}
                 }
               }
@@ -1469,7 +1474,7 @@
                   "x": {"signal": "1"},
                   "width": {"signal": "item.mark.group.width-2-columnPadding"},
                   "stroke": {"signal": "'#a0d786'"},
-                  "yc": {"signal": "(scale('y',datum.id)+bandwidth('y')/2)"},
+                  "yc": {"signal": "(scale('y',datum.rowId)+bandwidth('y')/2)"},
                   "fill": {"value": "white"},
                   "height": {"signal": "bandwidth('y')-yPaddingInner*2"},
                   "strokeWidth": {"signal": "datum.id == itemHovered.id?2:1"}
@@ -1487,7 +1492,7 @@
                     "signal": "((item.mark.group.width-columnPadding)/100)*datum.completion"
                   },
                   "fill": {"signal": "'#c6ecb5'"},
-                  "yc": {"signal": "(scale('y',datum.id)+bandwidth('y')/2)"},
+                  "yc": {"signal": "(scale('y',datum.rowId)+bandwidth('y')/2)"},
                   "strokeWidth": {"value": 1},
                   "height": {"signal": "bandwidth('y')-yPaddingInner*2"}
                 }
@@ -1502,7 +1507,7 @@
                   "align": {"value": "left"},
                   "dx": {"value": 3},
                   "fill": {"signal": "textColour"},
-                  "y": {"signal": "scale('y',datum.id)+bandwidth('y')/2"},
+                  "y": {"signal": "scale('y',datum.rowId)+bandwidth('y')/2"},
                   "text": {"signal": "datum.completion+'%'"}
                 }
               }
@@ -1597,7 +1602,7 @@
                 "signal": "datum.milestone?sqrt(milestoneSymbolSize)/2 - dayBandwidth/2 + 5:5"
               },
               "y": {
-                "signal": "datum.phase == datum.task?scale('y', datum.id)-2:scale('y', datum.id)"
+                "signal": "datum.phase == datum.task?scale('y', datum.rowId)-2:scale('y', datum.rowId)"
               },
               "dy": {"signal": "bandwidth('y')/2"},
               "fill": {
@@ -1687,7 +1692,7 @@
               "clip": {"signal": "true"},
               "x": {"scale": "x", "field": "start"},
               "x2": {"scale": "x", "field": "end"},
-              "yc": {"signal": "(scale('y',datum.id)+bandwidth('y')/2)"},
+              "yc": {"signal": "(scale('y',datum.rowId)+bandwidth('y')/2)"},
               "height": {"signal": "bandwidth('y')-yPaddingInner*2"},
               "tooltip": {
                 "signal": "showTooltips&&down==null?{'Group':datum.phase ,'Member':datum.task , 'Leave Start':timeFormat(datum.start,'%a, %d %B %Y' ),'Leave End':timeFormat(datum.labelEnd,'%a, %d %B %Y' ), 'Days':datum.days, 'Details':datum.assignee ,'Completion':datum.completionLabel, 'Status':datum.status }:null"
@@ -1798,7 +1803,7 @@
               "stroke": {"value": "red"},
               "x": {"scale": "x", "field": "start", "offset": 0},
               "x2": {"scale": "x", "field": "end", "offset": 0},
-              "yc": {"signal": "scale('y',datum.id)+bandwidth('y')/2"},
+              "yc": {"signal": "scale('y',datum.rowId)+bandwidth('y')/2"},
               "height": {"signal": "bandwidth('y')-yPaddingInner*2"}
             }
           },
@@ -1837,7 +1842,7 @@
           "encode": {
             "update": {
               "x": {"signal": "scale('x',datum.start)+dayBandwidth/2"},
-              "y": {"signal": "scale('y', datum.id)+bandwidth('y')/2"},
+              "y": {"signal": "scale('y', datum.rowId)+bandwidth('y')/2"},
               "size": {"signal": "milestoneSymbolSize"},
               "shape": {"value": "diamond"},
               "fill": {
@@ -1869,7 +1874,7 @@
                   "signal": "datum.milestone!=null && datum.milestone != false? -(sqrt(arrowSymbolSize))/2 + dayBandwidth/2 - (sqrt(milestoneSymbolSize))/2 +1:-(sqrt(arrowSymbolSize)/2) +1"
                 }
               },
-              "y": {"signal": "scale('y', datum.id)+bandwidth('y')/2"},
+              "y": {"signal": "scale('y', datum.rowId)+bandwidth('y')/2"},
               "fill": {
                 "signal": "datum.id == itemHovered.id  ?merge(hsl(scale('cDark', datum.phase)), {l:0.40}):'#6a6a6a'"
               },
@@ -1890,7 +1895,7 @@
         "update": {
           "x": {"value": -15},
           "x2": {"signal": "columnsWidth"},
-          "y": {"signal": "scale('y', datum.id)"},
+          "y": {"signal": "scale('y', datum.rowId)"},
           "height": {"signal": "bandwidth('y')"},
           "fill": {"value": "transparent"},
           "cursor": {"signal": "datum.phase == datum.task?'pointer':'auto'"},
@@ -2061,7 +2066,7 @@
       "name": "y",
       "type": "band",
       "domain": {
-        "fields": [{"data": "yScale", "field": "id"}],
+        "fields": [{"data": "yScale", "field": "rowId"}],
         "sort": {"op": "min", "field": "finalSort", "order": "ascending"}
       },
       "range": {"signal": "yRange"}

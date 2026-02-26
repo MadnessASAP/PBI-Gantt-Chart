@@ -111,6 +111,7 @@ Use these source columns in Deneb values (no hierarchy on dates):
 
 ### What this variant changes
 
+- Renders **one row per member** (grouped by `MEM_UID` when available) and places multiple leave bars for that member on the same line.
 - Drops hierarchy-derived `phase` grouping so rows are controlled directly by your external member slicers.
 - `phase` is now optional; if omitted, no hierarchy path is built.
 - Includes guards for invalid/missing dates to prevent Deneb SVG path errors when source rows are incomplete.
