@@ -560,7 +560,7 @@
         }
       ],
       "format": {
-        "parse": {"start": "date:'%d/%m/%Y'", "end": "date:'%d/%m/%Y'"}
+        "parse": {"start": "date:'%d/%m/%Y'", "end": "date:'%d/%m/%Y'", "START_DATE": "date", "END_DATE": "date"}
       }
     },
     {
@@ -570,7 +570,7 @@
         {
           "type": "formula",
           "as": "id",
-          "expr": "isValid(datum.id)?toString(datum.id):isValid(datum.LEAVE_PASS_NB)?toString(datum.LEAVE_PASS_NB):toString(datum.MEM_UID)+'-'+timeFormat(datum.START_DATE,'%Y%m%d')"
+          "expr": "isValid(datum.id)?toString(datum.id):isValid(datum.LEAVE_PASS_NB)?toString(datum.LEAVE_PASS_NB):toString(datum.MEM_UID)+'-'+toString(datum.START_DATE)"
         },
         {
           "type": "formula",
@@ -680,6 +680,10 @@
           "expr": "datum.completion+'%'"
         },
         {
+          "type": "filter",
+          "expr": "isValid(datum.start) && isValid(datum.end) && datum.end>=datum.start"
+        },
+        {
           "type": "window",
           "sort": {"field": "start", "order": "ascending"},
           "ops": ["rank"],
@@ -707,6 +711,10 @@
           "ops": ["min", "max", "sum", "count", "mean", "max"],
           "as": ["start", "end", "sum", "count", "completion", "labelEnd"],
           "groupby": ["phase"]
+        },
+        {
+          "type": "filter",
+          "expr": "isValid(datum.start) && isValid(datum.end)"
         },
         {"type": "formula", "as": "task", "expr": "datum.phase"},
         {"type": "formula", "as": "taskSort", "expr": "0"},
@@ -753,7 +761,11 @@
         {
           "type": "formula",
           "as": "phasePath",
-          "expr": "'M ' + scale('x', datum.start)+' '  +   (scale('y', datum.id)+yPaddingInner) + ' H ' +  scale('x', datum.end)+' '   + ' v ' +  phaseSymbolHeight + ' L ' +  (scale('x', datum.end) - phaseSymbolWidth) +' '  +   (scale('y', datum.id)+yPaddingInner+phaseSymbolHeight/2 ) + ' L ' +  (scale('x', datum.start)+phaseSymbolWidth) + ' '  +   (scale('y', datum.id)+yPaddingInner+phaseSymbolHeight/2) + ' L ' +  (scale('x', datum.start)) + ' '  +   (scale('y', datum.id)+ yPaddingInner+phaseSymbolHeight) + ' z'"
+          "expr": "isValid(scale('x', datum.start)) && isValid(scale('x', datum.end)) && isValid(scale('y', datum.id)) ? 'M ' + scale('x', datum.start)+' '  +   (scale('y', datum.id)+yPaddingInner) + ' H ' +  scale('x', datum.end)+' '   + ' v ' +  phaseSymbolHeight + ' L ' +  (scale('x', datum.end) - phaseSymbolWidth) +' '  +   (scale('y', datum.id)+yPaddingInner+phaseSymbolHeight/2 ) + ' L ' +  (scale('x', datum.start)+phaseSymbolWidth) + ' '  +   (scale('y', datum.id)+yPaddingInner+phaseSymbolHeight/2) + ' L ' +  (scale('x', datum.start)) + ' '  +   (scale('y', datum.id)+ yPaddingInner+phaseSymbolHeight) + ' z' : ''"
+        },
+        {
+          "type": "filter",
+          "expr": "datum.phasePath!=''"
         }
       ]
     },
