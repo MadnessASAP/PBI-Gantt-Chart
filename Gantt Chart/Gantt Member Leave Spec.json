@@ -574,8 +574,48 @@
         },
         {
           "type": "formula",
+          "as": "hierUnit",
+          "expr": "isValid(datum._UNIT)?datum._UNIT:isValid(datum.CURRENT_UNIT)?datum.CURRENT_UNIT:null"
+        },
+        {
+          "type": "formula",
+          "as": "hierFlight",
+          "expr": "isValid(datum._FLIGHT)?datum._FLIGHT:isValid(datum.CURRENT_FLIGHT)?datum.CURRENT_FLIGHT:null"
+        },
+        {
+          "type": "formula",
+          "as": "hierOrg",
+          "expr": "isValid(datum._ORG)?datum._ORG:isValid(datum.CURRENT_ORG)?datum.CURRENT_ORG:null"
+        },
+        {
+          "type": "formula",
+          "as": "hierSection",
+          "expr": "isValid(datum._SECTION)?datum._SECTION:isValid(datum.CURRENT_SECTION)?datum.CURRENT_SECTION:null"
+        },
+        {
+          "type": "formula",
+          "as": "hierSubsection",
+          "expr": "isValid(datum._SUBSECTION)?datum._SUBSECTION:isValid(datum.CURRENT_SUBSECTION)?datum.CURRENT_SUBSECTION:null"
+        },
+        {
+          "type": "formula",
+          "as": "hierUIC6",
+          "expr": "isValid(datum._UIC_6)?datum._UIC_6:isValid(datum.CURRENT_UIC_6)?datum.CURRENT_UIC_6:null"
+        },
+        {
+          "type": "formula",
+          "as": "hierUIC7",
+          "expr": "isValid(datum._UIC_7)?datum._UIC_7:isValid(datum.CURRENT_UIC_7)?datum.CURRENT_UIC_7:null"
+        },
+        {
+          "type": "formula",
           "as": "phase",
-          "expr": "isValid(datum.phase)?datum.phase:isValid(datum.CURRENT_SECTION) && isValid(datum.CURRENT_UNIT)?datum.CURRENT_SECTION+' | '+datum.CURRENT_UNIT:isValid(datum.CURRENT_SECTION)?datum.CURRENT_SECTION:isValid(datum.CURRENT_UNIT)?datum.CURRENT_UNIT:'Unassigned Unit'"
+          "expr": "isValid(datum.phase)?datum.phase:(isValid(datum.hierUnit)?datum.hierUnit:'') + (isValid(datum.hierFlight)?((isValid(datum.hierUnit)?' > ':'')+datum.hierFlight):'') + (isValid(datum.hierOrg)?((isValid(datum.hierUnit)||isValid(datum.hierFlight)?' > ':'')+datum.hierOrg):'') + (isValid(datum.hierSection)?((isValid(datum.hierUnit)||isValid(datum.hierFlight)||isValid(datum.hierOrg)?' > ':'')+datum.hierSection):'') + (isValid(datum.hierSubsection)?((isValid(datum.hierUnit)||isValid(datum.hierFlight)||isValid(datum.hierOrg)||isValid(datum.hierSection)?' > ':'')+datum.hierSubsection):'') + (isValid(datum.hierUIC6)?((isValid(datum.hierUnit)||isValid(datum.hierFlight)||isValid(datum.hierOrg)||isValid(datum.hierSection)||isValid(datum.hierSubsection)?' > ':'')+datum.hierUIC6):'') + (isValid(datum.hierUIC7)?((isValid(datum.hierUnit)||isValid(datum.hierFlight)||isValid(datum.hierOrg)||isValid(datum.hierSection)||isValid(datum.hierSubsection)||isValid(datum.hierUIC6)?' > ':'')+datum.hierUIC7):'')"
+        },
+        {
+          "type": "formula",
+          "as": "phase",
+          "expr": "datum.phase!=''?datum.phase:'Unassigned Unit Hierarchy'"
         },
         {
           "type": "formula",
@@ -1723,7 +1763,7 @@
               "yc": {"signal": "(scale('y',datum.id)+bandwidth('y')/2)"},
               "height": {"signal": "bandwidth('y')-yPaddingInner*2"},
               "tooltip": {
-                "signal": "showTooltips&&down==null?{'Section / Unit':datum.phase ,'Member':datum.task , 'Leave Start':timeFormat(datum.start,'%a, %d %B %Y' ),'Leave End':timeFormat(datum.labelEnd,'%a, %d %B %Y' ), 'Days':datum.days, 'Details':datum.assignee ,'Completion':datum.completionLabel, 'Status':datum.status }:null"
+                "signal": "showTooltips&&down==null?{'Unit Hierarchy':datum.phase ,'Member':datum.task , 'Leave Start':timeFormat(datum.start,'%a, %d %B %Y' ),'Leave End':timeFormat(datum.labelEnd,'%a, %d %B %Y' ), 'Days':datum.days, 'Details':datum.assignee ,'Completion':datum.completionLabel, 'Status':datum.status }:null"
               },
               "fill": {
                 "signal": "datum.id == itemHovered.id  || indexof(itemHovered.dependencies,datum.id )> -1 ?merge(hsl(scale('cLight', datum.phase)), {l:0.65}):scale('cLight', datum.phase)"
@@ -1813,7 +1853,7 @@
               },
               "strokeWidth": {"signal": "datum.id == itemHovered.id?1.5:1"},
               "tooltip": {
-                "signal": "showTooltips&&down==null?{'Section / Unit':datum.phase , 'Leave Start':timeFormat(datum.start,'%a, %d %B %Y' ),'Leave End':timeFormat(datum.labelEnd,'%a, %d %B %Y' ), 'Days':datum.days,'Completion':datum.completion+'%' }:null"
+                "signal": "showTooltips&&down==null?{'Unit Hierarchy':datum.phase , 'Leave Start':timeFormat(datum.start,'%a, %d %B %Y' ),'Leave End':timeFormat(datum.labelEnd,'%a, %d %B %Y' ), 'Days':datum.days,'Completion':datum.completion+'%' }:null"
               },
               "cursor": {"value": "pointer"}
             }

@@ -90,7 +90,7 @@ The following options can be easily configured within the specification.
 
 
 
-## Member Leave adaptation (section/unit view)
+## Member Leave adaptation (CURRENT_UNIT Hierarchy view)
 
 A member-focused variant of the chart is provided in `Gantt Member Leave Spec.json`.
 
@@ -104,16 +104,21 @@ Use these source columns in Deneb values (no hierarchy on dates):
 | `END_DATE` (or `end`) | `MEMBER_LEAVE_MONITOR[END_DATE]` |
 | `MEM_UID` | `MEMBER_LEAVE_MONITOR[MEM_UID]` or `MCS_MEMBER[MEM_UID]` |
 | `Display Name` (or `task`) | `MCS_MEMBER[Display Name]` |
-| `CURRENT_SECTION` | `MCS_MEMBER[CURRENT_SECTION]` |
-| `CURRENT_UNIT` | `MCS_MEMBER[CURRENT_UNIT]` |
+| `CURRENT_UNIT` / `_UNIT` | `MCS_MEMBER[CURRENT_UNIT]` |
+| `CURRENT_FLIGHT` / `_FLIGHT` (optional) | `MCS_MEMBER[CURRENT_FLIGHT]` |
+| `CURRENT_ORG` / `_ORG` (optional) | `MCS_MEMBER[CURRENT_ORG]` |
+| `CURRENT_SECTION` / `_SECTION` (optional) | `MCS_MEMBER[CURRENT_SECTION]` |
+| `CURRENT_SUBSECTION` / `_SUBSECTION` (optional) | `MCS_MEMBER[CURRENT_SUBSECTION]` |
+| `CURRENT_UIC_6` / `_UIC_6` (optional) | `MCS_MEMBER[CURRENT_UIC_6]` |
+| `CURRENT_UIC_7` / `_UIC_7` (optional) | `MCS_MEMBER[CURRENT_UIC_7]` |
 | `LEAVE_PASS_NB` (optional) | `MEMBER_LEAVE_MONITOR[LEAVE_PASS_NB]` |
 | `Status` (or `status`) | `REF_STATUS_ID[Status]` |
 | `DETAILS` / `NOTE` (optional) | `MEMBER_LEAVE_MONITOR[DETAILS]` / `MEMBER_LEAVE_MONITOR[NOTE]` |
 
 ### What this variant changes
 
-- Uses **Section + Unit** as the group row (`phase`) so members are organized by structure.
-- Uses **Display Name** as the main row label (`task`).
+- Uses **CURRENT_UNIT Hierarchy** as the group row (`phase`) in this order: `UNIT > FLIGHT > ORG > SECTION > SUBSECTION > UIC_6 > UIC_7`.
+- Missing hierarchy levels are automatically skipped, so partial hierarchy data still renders correctly.
 - Defaults leave bars to **100% completion** (for leave periods this behaves like a full block).
 - Maps status colors to leave-friendly values: `Approved`, `Pending`, `Rejected`, `Cancelled`.
 - Renames table headers to member/leave language (for example, `Member`, `Leave From`, `Leave To`, `Leave Status`).
