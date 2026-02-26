@@ -117,6 +117,6 @@ Use these source columns in Deneb values (no hierarchy on dates):
 - Includes guards for invalid/missing dates to prevent Deneb SVG path errors when source rows are incomplete.
 - Defaults leave bars to **100% completion** (for leave periods this behaves like a full block).
 - Maps status colors to leave-friendly values: `Approved`, `Pending`, `Rejected`, `Cancelled`.
-- Renames table headers to member/leave language (for example, `Member`, `Leave From`, `Leave To`, `Leave Status`).
+- Removes the extra detail columns (`Leave From`, `Leave To`, `Days`, `Leave Status`, `Duration %`) so only the member label column remains.
 
 If your status values differ, edit the `statusColumn` signal in the spec.

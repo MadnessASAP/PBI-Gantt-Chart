@@ -54,14 +54,13 @@
     },
     {"name": "yPaddingInner", "init": "yRowPadding * yRowHeight"},
     {"name": "taskColumnWidth", "init": "155+columnPadding"},
-    {"name": "startColumnWidth", "init": "45+columnPadding"},
-    {"name": "endColumnWidth", "init": "45+columnPadding"},
-    {"name": "daysColumnWidth", "init": "35+columnPadding"},
+    {"name": "startColumnWidth", "value": 0},
+    {"name": "endColumnWidth", "value": 0},
+    {"name": "daysColumnWidth", "value": 0},
     {
-      "name": "statusColumnWidth",
-      "init": "statusColumnPresent?47+columnPadding:0"
+      "name": "statusColumnWidth", "value": 0
     },
-    {"name": "progressColumnWidth", "init": "55+columnPadding"},
+    {"name": "progressColumnWidth", "value": 0},
     {"name": "columnPadding", "value": 15},
     {
       "name": "statusColumnPresent",
@@ -86,7 +85,7 @@
     {"name": "phaseSymbolWidth", "value": 10},
     {
       "name": "columnsWidth",
-      "update": "!showColumns?taskColumnWidth: taskColumnWidth+startColumnWidth+endColumnWidth+daysColumnWidth+statusColumnWidth+progressColumnWidth"
+      "update": "taskColumnWidth"
     },
     {"name": "ganttWidth", "update": "width-columnsWidth-minDayBandwidth"},
     {
@@ -160,7 +159,7 @@
         }
       ]
     },
-    {"name": "scaledHeight", "update": "data('yScale').length * yRowHeight"},
+    {"name": "scaledHeight", "update": "max(1,data('memberRows').length) * yRowHeight"},
     {
       "name": "yRange",
       "update": "[yRange!=null?yRange[0]:0,yRange!=null?yRange[0]+scaledHeight:scaledHeight]",
@@ -734,6 +733,19 @@
       ]
     },
     {
+      "name": "memberRows",
+      "source": "yScale",
+      "transform": [
+        {
+          "type": "aggregate",
+          "fields": ["task", "finalSort"],
+          "ops": ["min", "min"],
+          "as": ["task", "finalSort"],
+          "groupby": ["rowId"]
+        }
+      ]
+    },
+    {
       "name": "xExt",
       "source": "input",
       "transform": [
@@ -1146,7 +1158,7 @@
       "description": "Hidden label sizes to support tooltips when the task name doesn't completely fit",
       "type": "text",
       "clip": true,
-      "from": {"data": "yScale"},
+      "from": {"data": "memberRows"},
       "encode": {
         "enter": {
           "x": {"value": -100},
@@ -1221,21 +1233,15 @@
               "type": "text",
               "style": "col",
               "clip": true,
-              "from": {"data": "yScale"},
+              "from": {"data": "memberRows"},
               "encode": {
                 "update": {
                   "align": {"value": "left"},
                   "dx": {"value": 16},
                   "y": {"signal": "scale('y', datum.rowId)+bandwidth('y')/2"},
-                  "text": {
-                    "signal": "datum.phase == datum.task?upper(datum.task):datum.task"
-                  },
-                  "font": {
-                    "signal": "datum.phase == datum.task?'Arial':'Segoe UI'"
-                  },
-                  "fontWeight": {
-                    "signal": "datum.phase == datum.task?'bold':'normal'"
-                  },
+                  "text": {"signal": "datum.task"},
+                  "font": {"value": "Segoe UI"},
+                  "fontWeight": {"value": "normal"},
                   "limit": {"signal": "taskColumnWidth-16-columnPadding"},
                   "fill": {
                     "signal": "datum.id == itemHovered.id  ?merge(hsl(scale('cDark', datum.phase)), {l:0.40}):textColour"
@@ -1249,15 +1255,11 @@
               "from": {"data": "yScale"},
               "encode": {
                 "update": {
-                  "fill": {
-                    "signal": "datum.id == itemHovered.id && datum.phase == datum.task ?merge(hsl(scale('cDark', datum.phase)), {l:0.40}):datum.phase == datum.task ?scale('cDark', datum.phase):'transparent'"
-                  },
+                  "fill": {"value": "transparent"},
                   "x": {"signal": "sqrt(90)/2"},
                   "size": {"value": 90},
                   "yc": {"signal": "(scale('y', datum.rowId)+bandwidth('y')/2)-1"},
-                  "shape": {
-                    "signal": "datum.phase == datum.task && !indata('collapsedPhases', 'phase', datum.phase)?'triangle-down':datum.phase == datum.task && indata('collapsedPhases', 'phase', datum.phase)?'triangle-right':''"
-                  }
+                  "shape": {"value": ""}
                 }
               }
             }
